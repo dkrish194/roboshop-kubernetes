@@ -1,3 +1,15 @@
+# apiVersion: eksctl.io/v1alpha5
+# kind: ClusterConfig
+# metadata:
+#   name: cluster-krishna
+#   region: us-east-1
+
+# managedNodeGroups:
+#   - name: spot
+#     instanceTypes : [ "c3.large","c4.large","c5.large","c5d.large","c5n.large","c5a.large"]
+#     spot: true
+#     desiredCapacity: 2
+
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 metadata:
@@ -6,6 +18,12 @@ metadata:
 
 managedNodeGroups:
   - name: spot
-    instanceTypes : [ "c3.large","c4.large","c5.large","c5d.large","c5n.large","c5a.large"]
+    instanceTypes:
+      - t3.medium
+      - t3a.medium
+      - c5.large
+      - c5a.large
     spot: true
+    minSize: 1
+    maxSize: 3
     desiredCapacity: 2
