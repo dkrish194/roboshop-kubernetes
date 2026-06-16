@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalogue
+data:
+  MONGO: "true"
+  MONGO_URL: "mongodb://mongo:27017/catalogue"
+  
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: catalogue
+  namespace: roboshop
+  labels:
+    project: roboshop
+    teir: db
+    component: catalogue
+spec:
+  replicas: 1
+  selector:
+    project: roboshop
+    teir: db
+    component: catalogue
+  template:
+    metadata:
+      name: catalogue
+      labels:
+        project: roboshop
+        teir: db
+        component: catalogue
+    spec:
+      containers:
+        - name: catalogue
+          image: dkrish194/catalogue:2.0.0
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "100Mi"
+            limits:
+              cpu: "100m"
+              memory: "100Mi"
+          envFrom:
+            - configmapRef:
+                name: catalogue
+            
+            
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalogue
+  labels:
+      project: roboshop
+      teir: db
+      component: catalogue
+spec:
+  type: ClusterIP
+  selector:
+    project: roboshop
+    teir: db
+    component: catalogue
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+            
