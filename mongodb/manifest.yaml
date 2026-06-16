@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: mongodb
-          image: dkrish194/mongodb:1.0.0
+          image: dkrish194/mongodb:2.0.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -42,6 +42,7 @@ metadata:
       teir: db
       component: mongodb
 spec:
+  type: ClusterIP
   selector:
     project: roboshop
     teir: db
