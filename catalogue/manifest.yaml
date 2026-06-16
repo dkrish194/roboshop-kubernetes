@@ -20,9 +20,10 @@ metadata:
 spec:
   replicas: 1
   selector:
-    project: roboshop
-    teir: db
-    component: catalogue
+    matchLabels:
+      project: roboshop
+      teir: db
+      component: catalogue
   template:
     metadata:
       name: catalogue
