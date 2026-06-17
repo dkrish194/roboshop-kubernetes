@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shipping
+data:
+  CART_ENDPOINT: cart:8080
+  MONGO_URL: DB_HOST=mysql
+  
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: shipping
+  namespace: roboshop
+  labels:
+    project: roboshop
+    teir: db
+    component: shipping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      project: roboshop
+      teir: db
+      component: shipping
+  template:
+    metadata:
+      name: shipping
+      labels:
+        project: roboshop
+        teir: db
+        component: shipping
+    spec:
+      containers:
+        - name: shipping
+          image: dkrish194/shipping:2.0.0
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "100Mi"
+            limits:
+              cpu: "100m"
+              memory: "100Mi"
+          envFrom:
+            - configMapRef:
+                name: shipping
+            
+            
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipping
+  labels:
+      project: roboshop
+      teir: db
+      component: shipping
+spec:
+  type: ClusterIP
+  selector:
+    project: roboshop
+    teir: db
+    component: shipping
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+            
