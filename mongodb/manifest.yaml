@@ -23,15 +23,15 @@ spec:
     spec:
       containers:
         - name: mongodb
-          image: dkrish194/mongodb:2.0.0
+          image: dkrish194/mongodb:3.0.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: "300m"
+              memory: "300Mi"
             limits:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: "300m"
+              memory: "300Mi"
 ---
 apiVersion: v1
 kind: Service
@@ -42,7 +42,6 @@ metadata:
       teir: db
       component: mongodb
 spec:
-  type: ClusterIP
   selector:
     project: roboshop
     teir: db
