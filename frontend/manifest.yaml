@@ -1,9 +1,14 @@
 apiVersion: v1
 kind: ConfigMap
-metadata:
-  name: frontend
+metadata: 
+  name: nginx
+  namespace: roboshop
+  labels:
+    project: roboshop
+    teir: backend
+    component: frontend
 data: 
-  nginx_config:
+  nginx.conf: |
     user nginx;
     worker_processes auto;
     error_log /var/log/nginx/error.log notice;
@@ -66,66 +71,85 @@ data:
 
         }
     }
----
 
+---
 apiVersion: apps/v1
 kind: Deployment
-metadata: 
+metadata:
   name: frontend
   namespace: roboshop
   labels:
     project: roboshop
-    teir: db
+    teir: backend
     component: frontend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       project: roboshop
-      teir: db
-      component: frontend
+      teir: backend
+      component: frontend  
   template:
     metadata:
       name: frontend
       labels:
         project: roboshop
-        teir: db
+        teir: backend
         component: frontend
     spec:
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx
       containers:
         - name: frontend
-          image: dkrish194/frontend:2.0.0
+          image: dkrish194/frontend:3.0.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: "500m"
+              memory: "500Mi"
             limits:
-              cpu: "100m"
-              memory: "100Mi"
-          envFrom:
-            - configMapRef:
-                name: frontend
-            
-            
-
----
+              cpu: "500m"
+              memory: "500Mi"
+          readinessProbe:
+            tcpSocket:  
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 10
+            failureThreshold: 10
+          volumeMounts:
+            - name: nginx-config
+              mountPath: "/etc/nginx/nginx.conf"
+              subPath: nginx.conf
+              readOnly: true
+        
+          
+        
+---      
 apiVersion: v1
 kind: Service
 metadata:
   name: frontend
+  namespace: roboshop
   labels:
-      project: roboshop
-      teir: db
-      component: frontend
+    project: roboshop
+    teir: backend
+    component: frontend
 spec:
   type: LoadBalancer
   selector:
     project: roboshop
-    teir: db
+    teir: backend
     component: frontend
   ports:
-    - port: 8080
-      targetPort: 8080
+    - port: 81
+      targetPort: 80
       protocol: TCP
-            
+ 
