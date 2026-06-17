@@ -1,72 +1,85 @@
 apiVersion: v1
 kind: ConfigMap
-metadata:
-  name: cart
-data:
-  REDIS_HOST: "redis"
-  RCATALOGUE_HOST: "catalogue"
-  CATALOGUE_PORT: "8080"
-  
----
-
-apiVersion: apps/v1
-kind: Deployment
 metadata: 
   name: cart
   namespace: roboshop
   labels:
     project: roboshop
-    teir: db
+    teir: backend
+    component: cart
+data:
+  REDIS_HOST: redis
+  CATALOGUE_HOST: catalogue
+  CATALOGUE_PORT: "8080"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart
+  namespace: roboshop
+  labels:
+    project: roboshop
+    teir: backend
     component: cart
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       project: roboshop
-      teir: db
-      component: cart
+      teir: backend
+      component: cart  
   template:
     metadata:
       name: cart
       labels:
         project: roboshop
-        teir: db
+        teir: backend
         component: cart
     spec:
       containers:
         - name: cart
-          image: dkrish194/cart:2.0.0
+          image: dkrish194/cart:3.0.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: "500m"
+              memory: "500Mi"
             limits:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: "500m"
+              memory: "500Mi"
+          readinessProbe:
+            tcpSocket:  
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 10
           envFrom:
             - configMapRef:
                 name: cart
-            
-            
-
----
+---      
 apiVersion: v1
 kind: Service
 metadata:
   name: cart
+  namespace: roboshop
   labels:
-      project: roboshop
-      teir: db
-      component: cart
+    project: roboshop
+    teir: backend
+    component: cart
 spec:
   type: ClusterIP
   selector:
     project: roboshop
-    teir: db
+    teir: backend
     component: cart
   ports:
     - port: 8080
       targetPort: 8080
       protocol: TCP
-            

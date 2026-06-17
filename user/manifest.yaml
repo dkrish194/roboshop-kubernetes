@@ -1,72 +1,84 @@
 apiVersion: v1
 kind: ConfigMap
-metadata:
-  name: user
-data:
-  MONGO: "true"
-  REDIS_URL: 'redis://redis:6379'
-  MONGO_URL: "mongodb://mongo:27017/users"
-  
----
-
-apiVersion: apps/v1
-kind: Deployment
 metadata: 
   name: user
   namespace: roboshop
   labels:
     project: roboshop
-    teir: db
+    teir: backend
+    component: user
+data:
+  MONGO: "true"
+  REDIS_URL: "redis://redis:6379"
+  MONGO_URL: "mongodb://mongodb:27017/users"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user
+  namespace: roboshop
+  labels:
+    project: roboshop
+    teir: backend
     component: user
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       project: roboshop
-      teir: db
-      component: user
+      teir: backend
+      component: user  
   template:
     metadata:
       name: user
       labels:
         project: roboshop
-        teir: db
+        teir: backend
         component: user
     spec:
       containers:
         - name: user
-          image: dkrish194/user:2.0.0
+          image: dkrish194/user:3.0.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: "500m"
+              memory: "500Mi"
             limits:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: "500m"
+              memory: "500Mi"
+          readinessProbe:
+            tcpSocket:  
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 10
           envFrom:
             - configMapRef:
                 name: user
-            
-            
-
----
+---      
 apiVersion: v1
 kind: Service
 metadata:
   name: user
+  namespace: roboshop
   labels:
-      project: roboshop
-      teir: db
-      component: user
+    project: roboshop
+    teir: backend
+    component: user
 spec:
-  type: ClusterIP
   selector:
     project: roboshop
-    teir: db
+    teir: backend
     component: user
   ports:
     - port: 8080
       targetPort: 8080
       protocol: TCP
-            

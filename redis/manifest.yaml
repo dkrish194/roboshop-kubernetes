@@ -10,12 +10,12 @@ metadata:
 spec:
   replicas: 1
   selector:
-    project: roboshop
-    teir: db
-    component: redis
+    matchLabels:
+      project: roboshop
+      teir: db
+      component: redis
   template:
     metadata:
-      name: redis
       labels:
         project: roboshop
         teir: db
@@ -27,23 +27,22 @@ spec:
           imagePullPolicy: IfNotPresent
           resources:
             requests:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: "300m"
+              memory: "300Mi"
             limits:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: "300m"
+              memory: "300Mi"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: redis
   labels:
-      project: roboshop
-      teir: db
-      component: redis
+    project: roboshop
+    teir: db
+    component: redis
 spec:
-  type: ClusterIP
-  selector:
+  selector: 
     project: roboshop
     teir: db
     component: redis
@@ -51,4 +50,11 @@ spec:
     - port: 6379
       targetPort: 6379
       protocol: TCP
-            
+
+
+  
+              
+
+                
+      
+    

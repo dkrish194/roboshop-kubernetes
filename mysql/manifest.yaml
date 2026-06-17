@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
+  namespace: roboshop
   labels:
     project: roboshop
     teir: db
@@ -23,26 +24,26 @@ spec:
     spec:
       containers:
         - name: mysql
-          image: dkrish194/mysql:2.0.0
+          image: dkrish194/mysql:3.0.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: "800m"
+              memory: "800Mi"
             limits:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: "800m" 
+              memory: "800Mi"   
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: mysql
+  namespace: roboshop
   labels:
-      project: roboshop
-      teir: db
-      component: mysql
+    project: roboshop
+    teir: db
+    component: mysql
 spec:
-  type: ClusterIP
   selector:
     project: roboshop
     teir: db
@@ -51,9 +52,3 @@ spec:
     - port: 3306
       targetPort: 3306
       protocol: TCP
-  
-
-      
-
-    
-    
