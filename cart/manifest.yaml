@@ -43,10 +43,10 @@ spec:
           imagePullPolicy: IfNotPresent
           resources:
             requests:
-              cpu: "500m"
+              cpu: "200m"
               memory: "500Mi"
             limits:
-              cpu: "500m"
+              cpu: "200m"
               memory: "500Mi"
           readinessProbe:
             tcpSocket:
