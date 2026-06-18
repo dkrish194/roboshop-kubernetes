@@ -21,7 +21,7 @@ metadata:
     teir: backend
     component: catalogue
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       project: roboshop
@@ -43,7 +43,7 @@ spec:
             requests:
               cpu: "500m"
               memory: "500Mi"
-            limits: 
+            limits:
               cpu: "500m"
               memory: "500Mi"
           readinessProbe:
@@ -84,8 +84,7 @@ spec:
       protocol: TCP
 
 
-          
-            
-          
-          
-            
+
+
+
+

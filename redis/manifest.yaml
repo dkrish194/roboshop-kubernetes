@@ -1,6 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata: 
+metadata:
   name: redis
   namespace: roboshop
   labels:
@@ -36,13 +36,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: roboshop
   name: redis
   labels:
     project: roboshop
     teir: db
     component: redis
 spec:
-  selector: 
+  selector:
     project: roboshop
     teir: db
     component: redis
@@ -52,9 +53,8 @@ spec:
       protocol: TCP
 
 
-  
-              
 
-                
-      
-    
+
+
+
+
